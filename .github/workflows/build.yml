@@ -1,0 +1,40 @@
+name: Build DS Chat
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ver archivos del repositorio
+        run: |
+          echo "=== Contenido del repositorio ==="
+          ls -la
+          echo ""
+          echo "=== Carpeta source ==="
+          ls -la source || echo "No existe la carpeta source"
+          echo ""
+          echo "=== Makefile ==="
+          cat Makefile || echo "No existe Makefile"
+
+      - name: Compilar con BlocksDS
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/work \
+            -w /work \
+            skylyrac/blocksds:slim-latest \
+            make
+
+      - name: Subir el .nds
+        uses: actions/upload-artifact@v4
+        with:
+          name: ds-chat
+          path: |
+            *.nds
+          if-no-files-found: error
