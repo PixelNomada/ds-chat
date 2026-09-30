@@ -13,14 +13,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build with BlocksDS
+      - name: Ver archivos del repositorio
+        run: |
+          echo "=== Contenido del repositorio ==="
+          ls -la
+          echo ""
+          echo "=== Carpeta source ==="
+          ls -la source || echo "No existe la carpeta source"
+          echo ""
+          echo "=== Makefile ==="
+          cat Makefile || echo "No existe Makefile"
+
+      - name: Compilar con BlocksDS
         run: |
           docker run --rm -v ${{ github.workspace }}:/work \
             -w /work \
             skylyrac/blocksds:slim-latest \
             make
 
-      - name: Upload .nds
+      - name: Subir el .nds
         uses: actions/upload-artifact@v4
         with:
           name: ds-chat
